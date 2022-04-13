@@ -8,11 +8,14 @@
 <script>
 export default {
     name: 'CustomInput',
-    props:['type','placeholder'],
+    props:{
+        type: String,
+        placeholder: String,
+    },
     model:{
         prop:'value',
         event:'input'
-    }
+    },
 }
 </script>
 

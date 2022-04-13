@@ -8,10 +8,11 @@
 
             <CustomInput type="text" placeholder="login" v-model="store.login"/>
             <CustomInput type="text" placeholder="name" v-model="store.name"/>
-            <CustomInput type="text" placeholder="Surname" v-model="store.surName"/>
+            <CustomInput type="text" placeholder="surname" v-model="store.surName"/>
             <CustomInput type="text" placeholder="email" v-model="store.email"/>
             <PasswordInput v-model="store.password"/>
-            <h4 class="error" v-if="showMessage">{{ message }}</h4> 
+            <h4 class="error" v-if="showMessage">{{ message }}</h4>
+            <h4 class="error" v-if="showAlert">User already exists! Do you want to <router-link to='/sign_up'>sign in</router-link> ?</h4>
 
             <CustomButton buttonName="sign up"/>  
 
@@ -44,44 +45,31 @@ export default {
     error:'',
     loading: false,
     message:'These fields cannot be empty!',
-    showMessage: false 
+    showMessage: false,
+    showAlert: false
   }),
   methods: {
     async signUp(){
-      if (this.store.email != '' && this.store.password != '' && this.store.login != '' && this.store.name != '' && this.store.surName != '') {
-        this.showMessage = false;
-        console.log ('-> sign_up');
-        try {
-          this.error = '';
-          this.loading = true;
-          
-          const response = await fetch('https://6241d0d59ba1585b34015203.mockapi.io/api/example/Users',
-            { 
-              method: 'POST', 
-              body: JSON.stringify({ 
-                email: this.store.email,
-                name: this.store.name,
-                surName: this.store.surName,
-                password: this.store.password,
-                login: this.store.login,
-              })
-            }
-          );
-          // console.log(response);
+      this.showAlert = false;  
+      this.showMessage = false;
+      this.error = '';
+      try {
+        if (this.store.email === '' || this.store.password === '' || this.store.login === '' || this.store.name === '' || this.store.surName === '') {
+          this.showMessage = true;
+          return
+        }        
 
-          if (!response.ok) throw Error(response.status);
+        this.loading = true;       
+        this.store.putNewProfile();
 
-          this.$router.push ('/profile');
+        this.$router.push ('/profile');
 
-        } catch (e) {
-          console.log (e);
-          this.error = e;
-        } finally {
-          this.loading = false;        
-        }
-        
-      } else {
-        return this.showMessage = true;
+      } catch (e) {
+        console.log (e);
+        this.error = e;
+        this.showAlert = true;
+      } finally {
+        this.loading = false;        
       }
     },
   },

@@ -16,13 +16,36 @@ export const userStore = defineStore('userProfile', {
       if (!response.ok) throw Error(response.status);
 
       const usersArray = await response.json();
-      // console.log(usersArray);
-      const user = usersArray.find ( ({email, password}) => email === this.email && password === this.password );
+      const user = usersArray.find ( u => u.email === this.email && u.password === this.password );
+
+      if (!user) throw Error('user not found!')
       
       this.email = user.email;
       this.login = user.login;
       this.name = user.name;
       this.surName = user.surName; 
     },
+    async putNewProfile () {
+      const response = await fetch('https://6241d0d59ba1585b34015203.mockapi.io/api/example/Users',
+        { 
+          method: 'POST', 
+          body: JSON.stringify({ 
+            email: this.email,
+            name: this.name,
+            surName: this.surName,
+            password: this.password,
+            login: this.login,
+          })
+        }
+      );
+      if (!response.ok) throw Error(response.status);
+    },
+    async clearProfile() {
+      this.email = '';
+      this.login = '';
+      this.name = '';
+      this.surName = ''; 
+      this.password = '';
+    }
   },
 })

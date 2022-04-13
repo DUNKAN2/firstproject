@@ -49,39 +49,25 @@ export default {
   }),
   methods: {
     async signIn(){
-      if (this.store.email != '' && this.store.password != '') {
-        this.showMessage = false;
-        console.log ('-> sign_in');
-        try {
-          this.error = '';
-          this.loading = true;
-
-          const response = await fetch('https://6241d0d59ba1585b34015203.mockapi.io/api/example/Users',
-            { 
-              method: 'POST', 
-              body: JSON.stringify({ 
-                email: this.store.email, 
-                password: this.store.password, 
-              })
-            });
-          // console.log(response);
-          if (!response.ok) throw Error(response.status);
-          
-          // console.log(this.store.email);
-          // console.log(this.store.password);
-          
-          this.$router.push ('/profile');
-          
-        } catch (e) {
-          console.log (e);
-          this.error = e;
-          this.showAlert = true;
-        } finally {
-          this.loading = false;        
+      this.showAlert = false;  
+      this.showMessage = false;
+      this.error = '';
+      try {
+        if (this.store.email === '' || this.store.password === '') {
+          this.showMessage = true;
+          return
         }
 
-      } else {
-        return this.showMessage = true;
+        this.loading = true;
+        await this.store.getUserProfile();        
+        this.$router.push ('/profile');
+        
+      } catch (e) {
+        console.log (e);
+        this.error = e;
+        this.showAlert = true;
+      } finally {
+        this.loading = false;        
       }
     },
   },
